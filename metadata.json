@@ -1,0 +1,6 @@
+{
+  "name": "Afrinias",
+  "description": "A gamified professional productivity suite and habit tracker showcasing interactive dashboards, quest boards, analytical insights, group leaderboards, and live XP systems.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

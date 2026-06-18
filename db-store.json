@@ -1,0 +1,261 @@
+{
+  "userProfile": {
+    "name": "Commander Zephyr",
+    "title": "Elite Scout",
+    "level": 42,
+    "currentXp": 2450,
+    "xpToNextLevel": 3000,
+    "productivityScore": 94,
+    "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=250"
+  },
+  "habits": [
+    {
+      "id": "h1",
+      "title": "Morning 5K Run",
+      "category": "HEALTH",
+      "icon": "directions_run",
+      "streak": 24,
+      "xpPerDay": 50,
+      "levelProgress": 85,
+      "activityGrid": [
+        "completed",
+        "completed",
+        "completed",
+        "completed",
+        "completed",
+        "today",
+        "future",
+        "future"
+      ]
+    },
+    {
+      "id": "h2",
+      "title": "Deep Work (2h)",
+      "category": "FOCUS",
+      "icon": "psychology",
+      "streak": 5,
+      "xpPerDay": 100,
+      "levelProgress": 40,
+      "activityGrid": [
+        "missed",
+        "completed",
+        "completed",
+        "missed",
+        "completed",
+        "completed",
+        "today",
+        "future"
+      ]
+    },
+    {
+      "id": "h3",
+      "title": "Read 20 Pages",
+      "category": "MIND",
+      "icon": "menu_book",
+      "streak": 0,
+      "xpPerDay": 25,
+      "levelProgress": 10,
+      "activityGrid": [
+        "completed",
+        "completed",
+        "completed",
+        "missed",
+        "missed",
+        "missed",
+        "today",
+        "future"
+      ]
+    }
+  ],
+  "quests": [
+    {
+      "id": "q1",
+      "title": "Refactor Authentication Flow",
+      "description": "Migrate the current JWT implementation to the new OAuth2.0 standard across all microservices.",
+      "category": "Development",
+      "status": "todo",
+      "isGolden": false,
+      "deadline": "Oct 24",
+      "xpReward": 150
+    },
+    {
+      "id": "q2",
+      "title": "Create Illustration Set",
+      "description": "Draft initial concepts for the new onboarding gamification screens.",
+      "category": "Design",
+      "status": "todo",
+      "isGolden": false,
+      "deadline": "Nov 02",
+      "xpReward": 75
+    },
+    {
+      "id": "q3",
+      "title": "Q4 OKR Planning Session",
+      "description": "Finalize department objectives and align with overarching corporate strategy.",
+      "category": "Strategic",
+      "status": "in_progress",
+      "isGolden": true,
+      "progress": 65,
+      "deadline": "Due Today",
+      "warning": "Due Today",
+      "xpReward": 500
+    },
+    {
+      "id": "q4",
+      "title": "Fix Memory Leak in Prod",
+      "description": "Investigate the spike in memory usage reported on the main dashboard service.",
+      "category": "Development",
+      "status": "in_progress",
+      "isGolden": false,
+      "progress": 25,
+      "deadline": "Overdue 2 Days",
+      "warning": "Overdue 2 Days",
+      "xpReward": 200,
+      "overdueDays": 2
+    },
+    {
+      "id": "q5",
+      "title": "Launch Promo Campaign",
+      "description": "Establish creative concepts, design marketing resources and deploy landing configurations.",
+      "category": "Marketing",
+      "status": "completed",
+      "isGolden": false,
+      "deadline": "Completed Oct 20",
+      "xpReward": 300
+    }
+  ],
+  "teamCampaigns": [
+    {
+      "id": "tc1",
+      "title": "The Sprint of Silence",
+      "description": "Complete the Q3 Architecture refactor with zero critical bugs deployed to staging. A flawless execution required.",
+      "tier": "EPIC",
+      "timeLeft": "3d 14h left",
+      "xpReward": 5000,
+      "progress": 75,
+      "progressLabel": "Phase 3 of 4",
+      "avatars": [
+        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=150",
+        "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=150"
+      ],
+      "joined": false
+    },
+    {
+      "id": "tc2",
+      "title": "Code Review Crusade",
+      "description": "Review and merge 50 pending pull requests across the frontend repository.",
+      "tier": "RARE",
+      "timeLeft": "12h 45m left",
+      "xpReward": 1200,
+      "progress": 84,
+      "progressLabel": "PRs Merged: 42 / 50",
+      "avatars": [
+        "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=150"
+      ],
+      "joined": true
+    }
+  ],
+  "feed": [
+    {
+      "id": "f1",
+      "type": "achievement",
+      "title": "Achievement Unlocked: 'Deep Work Demon'",
+      "description": "Logged 4 hours of uninterrupted focus time.",
+      "timeAgo": "2 hours ago"
+    },
+    {
+      "id": "f2",
+      "type": "surpassed",
+      "title": "Sarah J. surpassed you",
+      "description": "Surpassed you on the Weekly Leaderboard.",
+      "timeAgo": "5 hours ago",
+      "avatar": "https://images.unsplash.com/photo-1544005313-94ddf0286df2??auto=format&fit=crop&q=80&w=150",
+      "retaliated": false
+    }
+  ],
+  "totalXp": 12450,
+  "supabaseAuthUsers": [
+    {
+      "id": "usr_zephyr",
+      "email": "zephyr@afrinias.net",
+      "role": "Leader",
+      "last_sign_in": "Just now"
+    },
+    {
+      "id": "usr_sarah",
+      "email": "sarah@afrinias.net",
+      "role": "Elite Scout",
+      "last_sign_in": "5 hours ago"
+    },
+    {
+      "id": "usr_user_demo",
+      "email": "mentesnotdebele09@gmail.com",
+      "role": "Commander",
+      "last_sign_in": "10 mins ago"
+    }
+  ],
+  "supabaseStorageBuckets": [
+    {
+      "id": "b1",
+      "bucket": "profile_images",
+      "filename": "avatar-zephyr.png",
+      "size": "245KB",
+      "contentType": "image/png",
+      "url": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=250"
+    },
+    {
+      "id": "b2",
+      "bucket": "inventory_assets",
+      "filename": "elite_scout_badge.svg",
+      "size": "48KB",
+      "contentType": "image/svg+xml",
+      "url": "https://images.unsplash.com/photo-1614741118887-7a4ee193a5fa?auto=format&fit=crop&q=80&w=250"
+    },
+    {
+      "id": "b3",
+      "bucket": "campaign_banners",
+      "filename": "cyberpunk_neon.png",
+      "size": "1.2MB",
+      "contentType": "image/png",
+      "url": "https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&q=80&w=400"
+    }
+  ],
+  "supabaseDbLogs": [
+    {
+      "id": "log_1780915846167",
+      "table": "system_all",
+      "operation": "SELECT",
+      "status": "200 OK",
+      "duration": "3.1ms",
+      "query": "SELECT userProfile, habits, quests, teamCampaigns, feed, totalXp FROM state",
+      "timestamp": "Just now"
+    },
+    {
+      "id": "log_1",
+      "table": "users",
+      "operation": "SELECT",
+      "status": "200 Success",
+      "duration": "1.2ms",
+      "query": "SELECT * FROM users WHERE id = 'usr_zephyr' LIMIT 1",
+      "timestamp": "Just now"
+    }
+  ],
+  "inventory": [
+    {
+      "id": "i1",
+      "name": "Bronze Momentum Sigil",
+      "description": "Increases focus habit streak protection by +1 day duration automatically.",
+      "category": "sigil",
+      "value": 150,
+      "image": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=100"
+    },
+    {
+      "id": "i2",
+      "name": "Cognitive Chronometer",
+      "description": "Provides real-time warning buffers for overtime development campaigns.",
+      "category": "accessory",
+      "value": 450,
+      "image": "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&q=80&w=100"
+    }
+  ]
+}
