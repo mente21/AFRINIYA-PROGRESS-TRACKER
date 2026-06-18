@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { UserProfile, FeedItem, GoldenGoal, Badge, Habit } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
+import { clearAllFeedsFromDb } from '../lib/badgesFeedsDb';
 
 interface DashboardViewProps {
   userProfile: UserProfile;
@@ -14,6 +15,7 @@ interface DashboardViewProps {
   onEditGoldenGoal?: () => void;
   badges: Badge[];
   habits: Habit[];
+  currentUserId?: string;
 }
 
 export default function DashboardView({
@@ -28,6 +30,7 @@ export default function DashboardView({
   onEditGoldenGoal,
   badges,
   habits,
+  currentUserId,
 }: DashboardViewProps) {
   const [retaliatingId, setRetaliatingId] = useState<string | null>(null);
   const [retaliationStatus, setRetaliationStatus] = useState<string>('');
@@ -218,9 +221,12 @@ export default function DashboardView({
               </h2>
               {feed.length > 0 && (
                 <button
-                  onClick={() => {
+                  onClick={async () => {
                     if (window.confirm('Are you sure you want to clear all activity feed items?')) {
                       setFeed([]);
+                      if (currentUserId) {
+                        await clearAllFeedsFromDb(currentUserId);
+                      }
                     }
                   }}
                   className="px-3 py-1.5 rounded-md text-[10px] font-mono font-bold uppercase border border-red-500/30 text-red-400 hover:bg-red-950/20 hover:border-red-500 active:scale-95 transition-all flex items-center gap-1.5"

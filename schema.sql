@@ -1,5 +1,7 @@
 -- Supabase DB Schema Setup for Afrinias Team Productivity Platform
 
+DROP TABLE IF EXISTS feeds CASCADE;
+DROP TABLE IF EXISTS badges CASCADE;
 DROP TABLE IF EXISTS period_winners CASCADE;
 DROP TABLE IF EXISTS xp_events CASCADE;
 DROP TABLE IF EXISTS award_claims CASCADE;
@@ -122,6 +124,35 @@ CREATE TABLE IF NOT EXISTS period_winners (
   UNIQUE(team_id, period, period_start)
 );
 
+-- 9. Badges
+CREATE TABLE IF NOT EXISTS badges (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES profiles(id) ON DELETE CASCADE NOT NULL,
+  badge_key TEXT NOT NULL,
+  name TEXT NOT NULL,
+  icon TEXT NOT NULL,
+  description TEXT NOT NULL,
+  xp_required INT NOT NULL,
+  color TEXT NOT NULL,
+  unlocked_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  UNIQUE(user_id, badge_key)
+);
+
+-- 10. Feeds
+CREATE TABLE IF NOT EXISTS feeds (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES profiles(id) ON DELETE CASCADE NOT NULL,
+  feed_key TEXT NOT NULL,
+  type TEXT NOT NULL,
+  title TEXT NOT NULL,
+  description TEXT NOT NULL,
+  time_ago TEXT NOT NULL,
+  avatar TEXT,
+  retaliated BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
 -- Enable Row Level Security (RLS)
 ALTER TABLE teams ENABLE ROW LEVEL SECURITY;
 ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
@@ -131,6 +162,8 @@ ALTER TABLE awards ENABLE ROW LEVEL SECURITY;
 ALTER TABLE award_claims ENABLE ROW LEVEL SECURITY;
 ALTER TABLE xp_events ENABLE ROW LEVEL SECURITY;
 ALTER TABLE period_winners ENABLE ROW LEVEL SECURITY;
+ALTER TABLE badges ENABLE ROW LEVEL SECURITY;
+ALTER TABLE feeds ENABLE ROW LEVEL SECURITY;
 
 -- Default Team Insert (To avoid complex onboarding for now, we'll auto-assign users to this team)
 INSERT INTO teams (id, name) 
@@ -228,3 +261,45 @@ WITH CHECK (user_id = auth.uid());
 
 CREATE POLICY "Users can delete own award claims" ON award_claims FOR DELETE
 USING (user_id = auth.uid());
+
+-- Badges: user read/write own
+CREATE POLICY "Users can view their own badges" 
+ON badges FOR SELECT 
+USING (user_id = auth.uid());
+
+CREATE POLICY "Users can insert their own badges" 
+ON badges FOR INSERT 
+WITH CHECK (user_id = auth.uid());
+
+CREATE POLICY "Users can update their own badges" 
+ON badges FOR UPDATE 
+USING (user_id = auth.uid())
+WITH CHECK (user_id = auth.uid());
+
+CREATE POLICY "Users can delete their own badges" 
+ON badges FOR DELETE 
+USING (user_id = auth.uid());
+
+-- Feeds: user read/write own
+CREATE POLICY "Users can view their own feeds" 
+ON feeds FOR SELECT 
+USING (user_id = auth.uid());
+
+CREATE POLICY "Users can insert their own feeds" 
+ON feeds FOR INSERT 
+WITH CHECK (user_id = auth.uid());
+
+CREATE POLICY "Users can update their own feeds" 
+ON feeds FOR UPDATE 
+USING (user_id = auth.uid())
+WITH CHECK (user_id = auth.uid());
+
+CREATE POLICY "Users can delete their own feeds" 
+ON feeds FOR DELETE 
+USING (user_id = auth.uid());
+
+-- Create indexes for better performance
+CREATE INDEX IF NOT EXISTS idx_badges_user_id ON badges(user_id);
+CREATE INDEX IF NOT EXISTS idx_badges_unlocked_at ON badges(unlocked_at);
+CREATE INDEX IF NOT EXISTS idx_feeds_user_id ON feeds(user_id);
+CREATE INDEX IF NOT EXISTS idx_feeds_created_at ON feeds(created_at DESC);

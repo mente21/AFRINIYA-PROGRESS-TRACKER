@@ -17,6 +17,7 @@ import { deriveTaskStatus } from './lib/taskUtils';
 import { getFrameCss, getFrameRank } from './lib/frames';
 import { mapDbHabit, habitToDb, mapDbAward, awardToDb, mapDbPeriodWinner, mapDbAwardClaim } from './lib/dbMappers';
 import { logXpEvent, finalizePeriodWinners, getCurrentPeriodLeaders } from './lib/periodWinners';
+import { syncBadgesToDb, loadBadgesFromDb, unlockBadgeInDb, syncFeedsToDb, loadFeedsFromDb, clearAllFeedsFromDb } from './lib/badgesFeedsDb';
 
 import {
   initialUserProfile,
@@ -274,6 +275,22 @@ export default function App() {
 
         await Promise.all([fetchHabits(), fetchAwards(), fetchPeriodWinners()]);
 
+        // Load badges from database
+        const dbBadges = await loadBadgesFromDb(userId);
+        if (dbBadges.length > 0) {
+          setBadges(dbBadges);
+        } else {
+          // Initialize badges for new users
+          await syncBadgesToDb(initialBadges, userId);
+          setBadges(initialBadges);
+        }
+
+        // Load feeds from database
+        const dbFeeds = await loadFeedsFromDb(userId);
+        if (dbFeeds.length > 0) {
+          setFeed(dbFeeds);
+        }
+
         // 4. Load remaining legacy data from LocalStorage
         const localLegacy = localStorage.getItem(`legacy_state_${userId}`);
         if (localLegacy) {
@@ -319,6 +336,24 @@ export default function App() {
     return () => clearTimeout(saveTimer);
   }, [teamCampaigns, feed, badges, goldenGoal, isDbLoading, session]);
 
+  // Sync badges to database
+  useEffect(() => {
+    if (isDbLoading || !session) return;
+    const saveTimer = setTimeout(() => {
+      syncBadgesToDb(badges, session.user.id);
+    }, 500);
+    return () => clearTimeout(saveTimer);
+  }, [badges, isDbLoading, session]);
+
+  // Sync feeds to database
+  useEffect(() => {
+    if (isDbLoading || !session) return;
+    const saveTimer = setTimeout(() => {
+      syncFeedsToDb(feed, session.user.id);
+    }, 500);
+    return () => clearTimeout(saveTimer);
+  }, [feed, isDbLoading, session]);
+
   // Sync profile to database
   useEffect(() => {
     if (isDbLoading || !session || !userProfile.name) return;
@@ -345,9 +380,15 @@ export default function App() {
     const newlyUnlocked = badges.filter(b => !b.unlockedAt && totalXp >= b.xpRequired);
     
     if (newlyUnlocked.length > 0) {
+      const unlockedAt = new Date().toISOString();
+      
       setBadges(prev => prev.map(badge => {
         if (!badge.unlockedAt && totalXp >= badge.xpRequired) {
-          return { ...badge, unlockedAt: new Date().toISOString() };
+          // Update in database
+          if (session) {
+            unlockBadgeInDb(badge.id, session.user.id, unlockedAt);
+          }
+          return { ...badge, unlockedAt };
         }
         return badge;
       }));
@@ -362,7 +403,7 @@ export default function App() {
       
       setFeed(prev => [...newFeedItems, ...prev]);
     }
-  }, [totalXp, isDbLoading, badges]);
+  }, [totalXp, isDbLoading, badges, session]);
 
   const handleLevelUpCheck = (xpAwarded: number) => {
     setUserProfile(prev => {
@@ -699,6 +740,7 @@ export default function App() {
                   onEditGoldenGoal={() => openModal('golden_goal')}
                   badges={badges}
                   habits={habits}
+                  currentUserId={session?.user?.id}
                 />
               )}
 
