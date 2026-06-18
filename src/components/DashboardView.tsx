@@ -211,12 +211,34 @@ export default function DashboardView({
 
           {/* Activity Feed */}
           <section className="space-y-3">
-            <h2 className="font-display text-[18px] font-bold text-white flex items-center gap-2">
-              <span className="material-symbols-outlined text-primary">diversity_3</span>
-              Activity Feed
-            </h2>
+            <div className="flex items-center justify-between">
+              <h2 className="font-display text-[18px] font-bold text-white flex items-center gap-2">
+                <span className="material-symbols-outlined text-primary">diversity_3</span>
+                Activity Feed
+              </h2>
+              {feed.length > 0 && (
+                <button
+                  onClick={() => {
+                    if (window.confirm('Are you sure you want to clear all activity feed items?')) {
+                      setFeed([]);
+                    }
+                  }}
+                  className="px-3 py-1.5 rounded-md text-[10px] font-mono font-bold uppercase border border-red-500/30 text-red-400 hover:bg-red-950/20 hover:border-red-500 active:scale-95 transition-all flex items-center gap-1.5"
+                >
+                  <span className="material-symbols-outlined text-xs">delete</span>
+                  Clear Feed
+                </button>
+              )}
+            </div>
             <div className="glass-panel rounded-xl p-4 divide-y divide-gray-800">
-              {feed.slice(0, 6).map((item) => (
+              {feed.length === 0 ? (
+                <div className="py-8 text-center">
+                  <span className="material-symbols-outlined text-4xl text-gray-700 mb-2 block">inbox</span>
+                  <p className="text-sm text-gray-500 font-mono">No activity yet</p>
+                  <p className="text-xs text-gray-600 mt-1">Complete tasks and habits to see your progress here</p>
+                </div>
+              ) : (
+                feed.slice(0, 6).map((item) => (
                 <div key={item.id} className="flex gap-4 py-4 first:pt-0 last:pb-0">
                   {item.avatar ? (
                     <img alt="User" className="w-10 h-10 rounded-full border border-gray-700 shrink-0 object-cover mt-1" src={item.avatar} />
@@ -255,7 +277,7 @@ export default function DashboardView({
                     )}
                   </div>
                 </div>
-              ))}
+              )))}
             </div>
           </section>
         </div>
