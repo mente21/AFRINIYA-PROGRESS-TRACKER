@@ -157,15 +157,21 @@ export default function App() {
         // 2. Fetch Team Profiles (for Leaderboard & Team Hub)
         let loadedTeamMembers: Profile[] = [];
         const fetchTeamMembers = async () => {
-          const { data: teamMembersData } = await supabase
+          console.log('🔍 Fetching team members for team:', userProfileData.team_id);
+          const { data: teamMembersData, error: teamError } = await supabase
             .from('profiles')
             .select('*')
             .eq('team_id', userProfileData.team_id)
             .order('name');
 
-          if (teamMembersData) {
+          console.log('📄 Team members fetch result:', { count: teamMembersData?.length || 0, error: teamError?.message });
+
+          if (teamError) {
+            console.error('❌ Error fetching team members:', teamError);
+          } else if (teamMembersData) {
             loadedTeamMembers = teamMembersData;
             setTeamMembers(teamMembersData);
+            console.log('✅ Team members loaded:', teamMembersData.map(m => m.name));
             const me = teamMembersData.find((m: Profile) => m.id === userId);
             if (me?.equipped_frame_id) {
               setUserProfile(prev => ({
@@ -193,47 +199,63 @@ export default function App() {
 
         // 3. Fetch Tasks and Completions
         const fetchTasks = async () => {
-          const [{ data: dbTasks }, { data: dbCompletions }] = await Promise.all([
+          console.log('🔍 Fetching tasks for team:', userProfileData.team_id);
+          const [{ data: dbTasks, error: taskError }, { data: dbCompletions, error: completionError }] = await Promise.all([
             supabase.from('tasks').select('*').eq('team_id', userProfileData.team_id),
             supabase.from('task_completions').select('task_id, user_id')
           ]);
 
-          const names = profileNameById(loadedTeamMembers);
+          console.log('📄 Tasks fetch result:', { taskCount: dbTasks?.length || 0, taskError: taskError?.message });
 
-          if (dbTasks) {
-            const mappedTasks = dbTasks.map(t => {
-              const { status, completedByMe, completionsCount } = deriveTaskStatus(
-                t.assignee_id,
-                dbCompletions || [],
-                t.id,
-                userId
-              );
-              const assigneeName = t.assignee_id ? names[t.assignee_id] : undefined;
-              return {
-                ...t,
-                xpReward: t.xp_reward,
-                taskType: t.task_type || 'one_time',
-                assigneeId: t.assignee_id || null,
-                assignee: assigneeName || (t.assignee_id ? 'Unknown' : 'ALL'),
-                status,
-                completionsCount,
-                completedByMe
-              };
-            });
-            setQuests(mappedTasks);
+          if (taskError) {
+            console.error('❌ Error fetching tasks:', taskError);
+          } else {
+            const names = profileNameById(loadedTeamMembers);
+
+            if (dbTasks) {
+              const mappedTasks = dbTasks.map(t => {
+                const { status, completedByMe, completionsCount } = deriveTaskStatus(
+                  t.assignee_id,
+                  dbCompletions || [],
+                  t.id,
+                  userId
+                );
+                const assigneeName = t.assignee_id ? names[t.assignee_id] : undefined;
+                return {
+                  ...t,
+                  xpReward: t.xp_reward,
+                  taskType: t.task_type || 'one_time',
+                  assigneeId: t.assignee_id || null,
+                  assignee: assigneeName || (t.assignee_id ? 'Unknown' : 'ALL'),
+                  status,
+                  completionsCount,
+                  completedByMe
+                };
+              });
+              console.log('✅ Tasks loaded:', mappedTasks.length, mappedTasks.map(t => t.title));
+              setQuests(mappedTasks);
+            }
           }
         };
         await fetchTasks();
 
         const fetchHabits = async () => {
-          const { data } = await supabase
+          console.log('🔍 Fetching habits for team:', userProfileData.team_id);
+          const { data, error } = await supabase
             .from('habits')
             .select('*')
             .eq('team_id', userProfileData.team_id)
             .order('created_at', { ascending: false });
-          if (data) {
+          
+          console.log('📄 Habits fetch result:', { dataCount: data?.length || 0, error: error?.message });
+          
+          if (error) {
+            console.error('Error fetching habits:', error);
+          } else if (data) {
             const names = profileNameById(loadedTeamMembers);
-            setHabits(data.map(h => mapDbHabit(h, names[h.user_id])));
+            const mappedHabits = data.map(h => mapDbHabit(h, names[h.user_id]));
+            console.log('✅ Mapped habits:', mappedHabits.length, mappedHabits.map(h => h.title));
+            setHabits(mappedHabits);
           }
         };
 
@@ -291,16 +313,6 @@ export default function App() {
           setFeed(dbFeeds);
         }
 
-        // 4. Load remaining legacy data from LocalStorage
-        const localLegacy = localStorage.getItem(`legacy_state_${userId}`);
-        if (localLegacy) {
-          const data = JSON.parse(localLegacy);
-          if (data.teamCampaigns) setTeamCampaigns(data.teamCampaigns);
-          if (data.feed) setFeed(data.feed);
-          if (data.badges) setBadges(data.badges);
-          if (data.goldenGoal !== undefined) setGoldenGoal(data.goldenGoal);
-        }
-
         // 5. Setup Realtime Subscriptions
         const channel = supabase.channel('team_updates')
           .on('postgres_changes', { event: '*', schema: 'public', table: 'tasks' }, fetchTasks)
@@ -324,17 +336,6 @@ export default function App() {
     }
     fetchState();
   }, [session, isAuthLoading]);
-
-  // Sync legacy state to localStorage
-  useEffect(() => {
-    if (isDbLoading || !session) return;
-    const saveTimer = setTimeout(() => {
-      localStorage.setItem(`legacy_state_${session.user.id}`, JSON.stringify({
-        teamCampaigns, feed, badges, goldenGoal
-      }));
-    }, 400);
-    return () => clearTimeout(saveTimer);
-  }, [teamCampaigns, feed, badges, goldenGoal, isDbLoading, session]);
 
   // Sync badges to database
   useEffect(() => {
@@ -488,6 +489,8 @@ export default function App() {
   };
 
   const handleAddHabit = async (newHabit: Habit) => {
+    console.log('🔍 Starting habit add...', { session: !!session, userId: session?.user?.id, teamId: userProfile.team_id });
+    
     const habitWithOwner = {
       ...newHabit,
       userId: session?.user?.id,
@@ -502,8 +505,31 @@ export default function App() {
       timeAgo: 'Just now'
     }, ...prev]);
 
+    // Database save with error logging
     if (session?.user?.id && userProfile.team_id) {
-      await supabase.from('habits').insert(habitToDb(habitWithOwner, session.user.id, userProfile.team_id));
+      try {
+        console.log('💾 Saving habit to database...', { userId: session.user.id, teamId: userProfile.team_id });
+        const dbHabit = habitToDb(habitWithOwner, session.user.id, userProfile.team_id);
+        console.log('📄 Habit data to save:', dbHabit);
+        
+        const { data, error } = await supabase.from('habits').insert(dbHabit).select().single();
+        if (error) {
+          console.error('❌ Database save failed:', error);
+          alert(`Failed to save habit: ${error.message}`);
+        } else {
+          console.log('✅ Habit saved successfully:', data);
+        }
+      } catch (saveError) {
+        console.error('💥 Save exception:', saveError);
+        alert(`Error saving habit: ${saveError}`);
+      }
+    } else {
+      console.warn('⚠️ Cannot save habit - missing session or team ID', { 
+        hasSession: !!session, 
+        userId: session?.user?.id, 
+        teamId: userProfile.team_id 
+      });
+      alert('Cannot save habit: Not logged in or team not set');
     }
   };
 
