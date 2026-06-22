@@ -274,13 +274,15 @@ export default function AwardsView({
                             {leaderboard.slice(0, 3).map((entry, idx) => {
                               const member = teamMembers?.find(m => m.id === entry.userId);
                               const isMe = entry.userId === currentUserId;
+                              // Use member's total_xp if available, otherwise use xpGained from events
+                              const displayXp = member?.total_xp !== undefined ? member.total_xp : entry.xpGained;
                               return (
                                 <div key={entry.userId} className={`flex justify-between items-center text-[10px] font-mono px-2 py-1 rounded ${isMe ? 'bg-primary/10 border border-primary/20' : ''}`}>
                                   <div className="flex items-center gap-2">
                                     <span className={`font-bold ${idx === 0 ? 'text-yellow-400' : idx === 1 ? 'text-gray-400' : 'text-amber-700'}`}>#{idx + 1}</span>
                                     <span className={isMe ? 'text-primary font-bold' : 'text-gray-300'}>{member?.name || 'Unknown'} {isMe && '(You)'}</span>
                                   </div>
-                                  <span className="text-white font-bold">{entry.xpGained.toLocaleString()} XP</span>
+                                  <span className="text-white font-bold">{displayXp.toLocaleString()} XP</span>
                                 </div>
                               );
                             })}

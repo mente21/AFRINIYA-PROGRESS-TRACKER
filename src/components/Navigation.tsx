@@ -161,37 +161,28 @@ export default function Navigation({
         </div>
       </aside>
 
+      {/* Mobile Floating Action Button */}
+      <div className="md:hidden fixed right-5 z-50 transition-all" style={{ bottom: 'calc(5.5rem + env(safe-area-inset-bottom, 0px))' }}>
+        <button onClick={onOpenNewTaskModal}
+          className="w-14 h-14 rounded-full bg-secondary text-on-secondary shadow-lg shadow-secondary/40 flex items-center justify-center hover:brightness-110 active:scale-90 transition-all text-neutral-950 glow-secondary">
+          <span className="material-symbols-outlined text-3xl font-bold">add</span>
+        </button>
+      </div>
+
       {/* Mobile Bottom Navigation */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-[#131b2e]/95 backdrop-blur-xl border-t border-gray-800 flex justify-around items-center z-40">
-        {mobileNavItems.slice(0, 2).map(item => (
-          <button key={item.tab} onClick={() => setActiveTab(item.tab)}
-            className={`flex flex-col items-center justify-center w-full h-full transition-colors ${
-              activeTab === item.tab ? 'text-primary' : 'text-gray-500 hover:text-white'
-            }`}
-          >
-            <span className="material-symbols-outlined text-xl">{item.icon}</span>
-            <span className="text-[9px] font-mono tracking-widest mt-0.5">{item.mobileLabel.toUpperCase()}</span>
-          </button>
-        ))}
-
-        {/* Center FAB */}
-        <div className="relative w-full flex justify-center -mt-6">
-          <button onClick={onOpenNewTaskModal}
-            className="w-12 h-12 rounded-full bg-secondary text-on-secondary shadow-lg shadow-secondary/40 flex items-center justify-center hover:brightness-110 active:scale-90 transition-all text-neutral-950 glow-secondary">
-            <span className="material-symbols-outlined text-2xl font-bold">add</span>
-          </button>
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 pt-2 pb-4 h-20 bg-[#131b2e]/95 backdrop-blur-xl border-t border-gray-800 z-40 pb-[max(1rem,env(safe-area-inset-bottom))] overflow-x-auto snap-x [&::-webkit-scrollbar]:hidden flex scroll-smooth">
+        <div className="flex px-2 h-full mx-auto w-max">
+          {navItems.map(item => (
+            <button key={item.tab} onClick={() => setActiveTab(item.tab)}
+              className={`flex shrink-0 flex-col items-center justify-center w-[76px] h-full transition-colors snap-center ${
+                activeTab === item.tab ? 'text-primary' : 'text-gray-500 hover:text-white'
+              }`}
+            >
+              <span className="material-symbols-outlined text-[22px]">{item.icon}</span>
+              <span className="text-[10px] font-mono tracking-widest mt-1">{item.mobileLabel.toUpperCase()}</span>
+            </button>
+          ))}
         </div>
-
-        {mobileNavItems.slice(2).map(item => (
-          <button key={item.tab} onClick={() => setActiveTab(item.tab)}
-            className={`flex flex-col items-center justify-center w-full h-full transition-colors ${
-              activeTab === item.tab ? 'text-primary' : 'text-gray-500 hover:text-white'
-            }`}
-          >
-            <span className="material-symbols-outlined text-xl">{item.icon}</span>
-            <span className="text-[9px] font-mono tracking-widest mt-0.5">{item.mobileLabel.toUpperCase()}</span>
-          </button>
-        ))}
       </nav>
     </>
   );
