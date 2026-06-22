@@ -229,7 +229,10 @@ export default function App() {
                   assignee: assigneeName || (t.assignee_id ? 'Unknown' : 'ALL'),
                   status,
                   completionsCount,
-                  completedByMe
+                  completedByMe,
+                  targetCount: t.target_count,
+                  currentCount: t.current_count,
+                  bonusXpPerResult: t.bonus_xp_per_result
                 };
               });
               console.log('✅ Tasks loaded:', mappedTasks.length, mappedTasks.map(t => t.title));
@@ -439,6 +442,9 @@ export default function App() {
         deadline: newQuest.deadline,
         xp_reward: newQuest.xpReward,
         assignee_id: newQuest.assigneeId || null,
+        target_count: newQuest.targetCount || null,
+        current_count: newQuest.currentCount || 0,
+        bonus_xp_per_result: newQuest.bonusXpPerResult || 0,
       });
     }
   };
@@ -457,6 +463,8 @@ export default function App() {
       deadline: updatedQuest.deadline,
       xp_reward: updatedQuest.xpReward,
       assignee_id: updatedQuest.assigneeId || null,
+      target_count: updatedQuest.targetCount || null,
+      bonus_xp_per_result: updatedQuest.bonusXpPerResult || 0,
     }).eq('id', updatedQuest.id);
   };
 

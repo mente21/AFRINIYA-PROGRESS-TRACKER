@@ -198,6 +198,8 @@ export default function TasksView({
       };
     }));
 
+    supabase.from('tasks').update({ current_count: newCount }).eq('id', questId);
+
     if (isNowComplete) {
       setTotalXp(prev => prev + quest.xpReward);
       setUserProfile(prev => {
@@ -233,6 +235,8 @@ export default function TasksView({
           }
           return { ...q, currentCount: newCount };
         }));
+
+        supabase.from('tasks').update({ current_count: newCount }).eq('id', questId);
 
         // Award bonus XP
         setTotalXp(prev => prev + bonus);

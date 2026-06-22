@@ -44,6 +44,9 @@ CREATE TABLE IF NOT EXISTS tasks (
   deadline TEXT,
   xp_reward INT DEFAULT 150,
   assignee_id UUID REFERENCES profiles(id) ON DELETE SET NULL,
+  target_count INT,
+  current_count INT DEFAULT 0,
+  bonus_xp_per_result INT DEFAULT 0,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
